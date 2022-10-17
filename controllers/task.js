@@ -1,35 +1,26 @@
 const mongoose = require("mongoose");
 const Task = require("../models/task");
-module.exports.getAllTask = (req, res, next) => {
-  Task.find()
-    .exec()
-    .then((docs) => {
-      const response = {
-        task: docs.map((doc) => {
-          return {
-            TaskName: doc.TaskName,
-            estimatedDuration: doc.estimatedDuration,
-            finalTime: doc.finalTime,
-            comment: doc.comment,
-            developerName: doc.developerName,
-            date: doc.date,
-            projectName: doc.projectName,
-            projectId: doc.projectId,
-            request: {
-              type: "GET",
-              url: "http://localhost:8080/technologies/" + doc._id,
-            },
-          };
-        }),
-      };
-      res.status(200).json(response);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(600).json({ error: err });
-    });
+module.exports.getAllTask = async (req, res, next) => {
+  try {
+    const tasks = await Task.find();
+    if (tasks.length >= 1) {
+      res
+        .status(200)
+        .json({ message: "all tasks listed successfully", tasks: tasks });
+    } else {
+      res
+        .status(200)
+        .json({
+          message: "There is No Task Available.Please, Add New Task ",
+          tasks: tasks,
+        });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err });
+  }
 };
-module.exports.postTask = (req, res, next) => {
+module.exports.postTask = async (req, res, next) => {
   const task = new Task({
     _id: new mongoose.Types.ObjectId(),
     TaskName: req.body.TaskName,
@@ -41,95 +32,59 @@ module.exports.postTask = (req, res, next) => {
     projectName: req.body.projectName,
     projectId: req.body.projectId,
   });
-  task
-    .save()
-    .then((result) => {
-      console.log(result);
-
-      res.status(200).json({
-        message: "created task suceessfully",
-        createdTechnology: {
-          TaskName: result.technologyName,
-          estimatedDuration: result.Resources,
-          finalTime: result.finalTime,
-          developerName: result.developerName,
-          date: result.date,
-          projectName: result.projectName,
-          projectId: result.projectId,
-          _id: result._id,
-        },
-        request: {
-          type: "GET",
-          url: "http://localhost:8080/tasks/" + result._id,
-        },
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(200).json({ error: err });
-    });
+  try {
+    const CreatedTask = await task.save();
+    res
+      .status(201)
+      .json({ message: "Task Registered Successfully", CreatedTask: CreatedTask });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err });
+  }
 };
-module.exports.getSpecificTask = (req, res, next) => {
+module.exports.getSpecificTask = async (req, res, next) => {
   const id = req.params.taskid;
-  Task.findById(id)
-    .exec()
-    .then((doc) => {
-      if (doc) {
-        res.status(200).json({
-          message: "get specific task suceessfully",
-          task: doc,
-          request: {
-            type: "GET",
-            url: "http://localhost:8080/technologies/",
-          },
-        });
-      } else {
-        res.status(404).json({ message: "no valid id" });
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(600).json({ error: err });
-    });
+  try {
+    const task = await Task.findById(id);
+    if (!task) {
+      res.status(404).json({ //this
+        message: "Not found",
+      });
+    } else {
+      res.status(200).json({ message: "Task Found", task: task });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err });
+  }
 };
-module.exports.updateSpecificTask = (req, res, next) => {
+module.exports.updateSpecificTask = async (req, res, next) => {
   const id = req.params.taskid;
 
-  console.log(req.file.filename);
-  Task.findByIdAndUpdate(id, { ...req.body }, { new: true })
-
-    .exec()
-    .then((doc) => {
-      return res.status(200).json({
-        message: " task updated suceessfully",
-        task: doc,
-        request: {
-          type: "GET",
-          url: "http://localhost:8080/task/" + doc._id,
-        },
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(600).json({ error: err });
-    });
+  try {
+    const task = await Task.findByIdAndUpdate(
+      id,
+      { ...req.body },
+      { new: true }
+    );
+    res
+      .status(200) //this
+      .json({ message: "Task Updated Successfully", UpdatedTask: task });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err });
+  }
 };
-module.exports.deleteSpecificTask = (req, res, next) => {
+module.exports.deleteSpecificTask = async (req, res, next) => {
   const id = req.params.taskid;
-  Task.remove({ _id: id })
-    .exec()
-    .then((doc) => {
-      res.status(200).json({
-        message: "task deleted suceessfully",
-        task: doc,
-        request: {
-          type: "GET",
-          url: "http://localhost:8080/technologies/" + doc._id,
-        },
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(600).json({ error: err });
+  try {
+    const task = await Task.remove({ _id: id });
+    res.status(204).json({
+      message: "Task deleted suceessfully",
+      Deletedtask: task,
     });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err });
+  }
 };

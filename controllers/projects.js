@@ -1,36 +1,28 @@
 const mongoose = require("mongoose");
-
+const emailsend = require("../MiddleWare/nodeMailor")
 const Project = require("../models/projects");
-module.exports.getAllProject = (req, res, next) => {
-  Project.find()
-    .exec()
-    .then((docs) => {
-      const response = {
-        projects: docs.map((doc) => {
-          return {
-            _id: doc._id,
-            projectName: doc.projectName,
-            projectDescription: doc.projectDescription,
-            startdate: doc.startdate,
-            enddate: doc.enddate,
-            status: doc.status,
-            Members: doc.Members,
-            technology: doc.technology,
-            request: {
-              type: "GET",
-              url: "http://localhost:8080/projects/" + doc._id,
-            },
-          };
-        }),
-      };
-      res.status(200).json(response);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(600).json({ error: err });
-    });
+module.exports.getAllProject = async(req, res, next) => {
+  try {
+    const projects = await Project.find();
+    if (projects.length >= 1) {
+      res
+        .status(200)
+        .json({ message: "all Projects listed successfully", projects: projects });
+    } else {
+      res
+        .status(200)
+        .json({
+          message: "There is No Project Available.Please, Add New Project ",
+          projects: projects,
+        });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err });
+  }
+
 };
-module.exports.postProject = (req, res, next) => {
+module.exports.postProject = async(req, res, next) => {
   const project = new Project({
     _id: new mongoose.Types.ObjectId(),
     projectName: req.body.projectName,
@@ -44,99 +36,62 @@ module.exports.postProject = (req, res, next) => {
       data: req.file.filename,
     },
   });
-  project
-    .save()
-    .then((doc) => {
-      console.log(doc);
-
-      res.status(200).json({
-        message: "created project suceessfully",
-        createdTechnology: {
-          _id: doc._id,
-          projectName: doc.projectName,
-          projectDescription: doc.projectDescription,
-          startdate: doc.startdate,
-          enddate: doc.enddate,
-          status: doc.status,
-          Members: doc.Members,
-          technology: doc.technology,
-        },
-        request: {
-          type: "GET",
-          url: "http://localhost:8080/projects/" + doc._id,
-        },
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(200).json({ error: err });
-    });
+  try {
+    const CreatedProject = await project.save();
+    emailsend
+    res
+      .status(201)
+      .json({ message: "Project Registered Successfully", CreatedProject: CreatedProject});
+     // emailsend
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err });
+  }
 };
-module.exports.getSpecificProject = (req, res, next) => {
+module.exports.getSpecificProject = async(req, res, next) => {
   const id = req.params.projectId;
-  Project.findById(id)
-    .exec()
-    .then((doc) => {
-      if (doc) {
-        res.status(200).json({
-          message: "get specific project suceessfully",
-          technology: doc,
-          request: {
-            type: "GET",
-            url: "http://localhost:8080/projects/",
-          },
-        });
-      } else {
-        res.status(404).json({ message: "no valid id" });
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(600).json({ error: err });
-    });
+  try {
+    const project = await Project.findById(id);
+    if (!project) {
+      res.status(404).json({ //this
+        message: "Not found",
+      });
+    } else {
+      res.status(200).json({ message: "Project Found",project : project });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err });
+  }
+ 
 };
-module.exports.updateSpecificProject = (req, res, next) => {
+module.exports.updateSpecificProject =async (req, res, next) => {
   const id = req.params.projectId;
 
-  Project.findByIdAndUpdate(
-    id,
-    { ...req.body, file: req.file.filename },
-    { new: true }
-  )
-
-    .exec()
-    .then((doc) => {
-      console.log(req.body);
-      return res.status(200).json({
-        message: " project updated suceessfully",
-        technologies: doc,
-        // request: {
-        //   type: "GET",
-        //   url: "http://localhost:8080/technologies/" + doc._id,
-        // },
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(600).json({ error: err });
-    });
+  try {
+    const project = await Project.findByIdAndUpdate(
+      id,
+      { ...req.body },
+      { new: true }
+    );
+    res
+      .status(200) //this
+      .json({ message: "Project Updated Successfully", UpdatedProject: project });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err });
+  }
 };
-module.exports.deleteSpecificProject = (req, res, next) => {
+module.exports.deleteSpecificProject =async (req, res, next) => {
   const id = req.params.projectId;
-  Project.remove({ _id: id })
-    .exec()
-    .then((doc) => {
-      res.status(200).json({
-        message: "technology deleted suceessfully",
-        technology: doc,
-        request: {
-          type: "GET",
-          url: "http://localhost:8080/projects/" + doc._id,
-        },
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(600).json({ error: err });
+  try {
+    const project = await Project.remove({ _id: id });
+    res.status(200).json({
+      message: "Project deleted suceessfully",
+      DeletedProject: project,
     });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err });
+  }
 };
