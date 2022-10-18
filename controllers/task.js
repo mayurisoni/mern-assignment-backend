@@ -1,23 +1,32 @@
 const mongoose = require("mongoose");
 const Task = require("../models/task");
+const { errorResponse } = require("../MiddleWare/response");
+const { successResponse } = require("../MiddleWare/successResponse");
 module.exports.getAllTask = async (req, res, next) => {
   try {
     const tasks = await Task.find();
     if (tasks.length >= 1) {
-      res
-        .status(200)
-        .json({ message: "all tasks listed successfully", tasks: tasks });
+      successResponse(res, 200, "all tasks listed successfully", tasks);
+      // res
+      //   .status(200)
+      //   .json({ message: "all tasks listed successfully", tasks: tasks });
     } else {
-      res
-        .status(200)
-        .json({
-          message: "There is No Task Available.Please, Add New Task ",
-          tasks: tasks,
-        });
+      successResponse(
+        res,
+        200,
+        "There is No Task Available.Please, Add New Task ",
+        tasks
+      );
+      // res
+      //   .status(200)
+      //   .json({
+      //     message: "There is No Task Available.Please, Add New Task ",
+      //     tasks: tasks,
+      //   });
     }
   } catch (err) {
     console.log(err);
-    res.status(500).json({ error: err });
+    errorResponse(res, 500, err);
   }
 };
 module.exports.postTask = async (req, res, next) => {
@@ -34,12 +43,16 @@ module.exports.postTask = async (req, res, next) => {
   });
   try {
     const CreatedTask = await task.save();
-    res
-      .status(201)
-      .json({ message: "Task Registered Successfully", CreatedTask: CreatedTask });
+    successResponse(res, 201, "Task Registered Successfully", CreatedTask);
+    // res
+    //   .status(201)
+    //   .json({
+    //     message: "Task Registered Successfully",
+    //     CreatedTask: CreatedTask,
+    //   });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ error: err });
+    errorResponse(res, 500, err);
   }
 };
 module.exports.getSpecificTask = async (req, res, next) => {
@@ -47,15 +60,18 @@ module.exports.getSpecificTask = async (req, res, next) => {
   try {
     const task = await Task.findById(id);
     if (!task) {
-      res.status(404).json({ //this
-        message: "Not found",
-      });
+      errorResponse(res, 404, "Not found");
+      // res.status(404).json({
+
+      //   message: "Not found",
+      // });
     } else {
-      res.status(200).json({ message: "Task Found", task: task });
+      // res.status(200).json({ message: "Task Found", task: task });
+      successResponse(res, 200, "Task Found", task);
     }
   } catch (err) {
     console.log(err);
-    res.status(500).json({ error: err });
+    errorResponse(res, 500, err);
   }
 };
 module.exports.updateSpecificTask = async (req, res, next) => {
@@ -67,24 +83,35 @@ module.exports.updateSpecificTask = async (req, res, next) => {
       { ...req.body },
       { new: true }
     );
-    res
-      .status(200) //this
-      .json({ message: "Task Updated Successfully", UpdatedTask: task });
+    if (!task) {
+      errorResponse(res, 404, "Not found");
+      // res.status(404).json({
+
+      //   message: "Not found",
+      // });
+    } else {
+      successResponse(res, 200, "Task Updated Successfully", task);
+    }
+
+    // res
+    //   .status(200) //this
+    //   .json({ message: "Task Updated Successfully", UpdatedTask: task });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ error: err });
+    errorResponse(res, 500, err);
   }
 };
 module.exports.deleteSpecificTask = async (req, res, next) => {
   const id = req.params.taskid;
   try {
     const task = await Task.remove({ _id: id });
-    res.status(204).json({
-      message: "Task deleted suceessfully",
-      Deletedtask: task,
-    });
+    successResponse(res, 200, "Task deleted suceessfully", task);
+    // res.status(200).json({
+    //   message: "Task deleted suceessfully",
+    //   Deletedtask: task,
+    // });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ error: err });
+    errorResponse(res, 500, err);
   }
 };

@@ -1,51 +1,60 @@
 const hbs = require('nodemailer-express-handlebars')
 const nodemailer = require('nodemailer')
-const path = require('path')
+const path = require('path');
 
 
-var transporter = nodemailer.createTransport(
-    {
-        service: 'gmail',
-        auth:{
-            user: 'mayurisoniwork@gmail.com',
-            pass: 'jmavovpgbcawdzgq'
+const nodemailor =async (projectName,projectDescription,filename,timeline,emaillist)=>{
+   
+    let transporter = nodemailer.createTransport(
+        {
+            service: 'gmail',
+            auth:{
+                user: 'mayurisoniwork@gmail.com',
+                pass: 'jmavovpgbcawdzgq'
+            }
         }
-    }
-);
+    );
+    
+    const handlebarOptions = {
+        viewEngine: {
+            partialsDir: path.resolve('./views/'),
+            defaultLayout: false,
+        },
+        viewPath: path.resolve('./views/'),
+    };
+    
+    // using  a template file 
+    transporter.use('compile', hbs(handlebarOptions))
+   const list= await emaillist()
+    console.log(list)
 
-const handlebarOptions = {
-    viewEngine: {
-        partialsDir: path.resolve('./views/'),
-        defaultLayout: false,
-    },
-    viewPath: path.resolve('./views/'),
-};
-
-// using  a template file 
-transporter.use('compile', hbs(handlebarOptions))
-
-
-var mailOptions = {
-    from: '"mayuri" <mayurisoniwork@gmail.com>', 
-    to: 'sonidio11@gmail.com',
-    subject: 'Welcome!',
-     template: 'email', 
-    context:{
-        name: "mayuri", 
-        company: 'My Company' ,
-        projectName:"dxc",
-        ProjectRequiremnet:"changes"
-    },
-    attachments: [{ filename: "pic-1.png", path: "./Attachments/marek-piwnicki-IsuVD39rKgM-unsplash.jpeg" }],
-    cc: 'sonidio11@gmail.com',
-    bcc: 'sonimayuri403@gmail.com'
-    //html:'<h1>hello</h1>'
+    list.forEach(function (to, i , array) {
+        var mailOptions = {
+            from: '<mayurisoniwork@gmail.com>', 
+            subject: 'Welcome!',
+             template: 'email', 
+            context:{
+                name: "mayuri", 
+                company: 'I-pangram' ,
+                projectName:projectName,
+                ProjectRequiremnet:projectDescription,
+                timeline:timeline
+            },
+            attachments: [{ filename: "pic-1.png", path: `./uploads/${filename}` }],
+           
+            //html:'<h1>hello</h1>'
+          
+        };
+        mailOptions.to = to;
+    
+    
   
-};
-
-transporter.sendMail(mailOptions, function(error, info){
-    if(error){
-        return console.log(error);
-    } 
-    console.log('Message sent: ' + info.response);
-});
+      transporter.sendMail(mailOptions, function(error, info){
+        if(error){
+            return console.log(error);
+        } 
+        console.log('Message sent: ' + info.response);
+    });
+    
+})}
+module.exports={nodemailor}

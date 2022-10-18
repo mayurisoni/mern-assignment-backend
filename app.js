@@ -58,7 +58,7 @@ app.use('/task',taskRoute)
 app.use(function(req, res, next) {
 
   
-  res.success = function ({result={}, code=200, message=""}) {
+  exports.res.success = function ({result={}, code=200, message=""}) {
       return res.json({
           result,
           code,
@@ -67,7 +67,7 @@ app.use(function(req, res, next) {
   }
 
   
-  res.errored = function({errors={}, code=400, message="", result={}}) {
+  exports.res.errored = function({errors={}, code=400, message="", result={}}) {
       return res.json({
           errors,
           code,
@@ -75,9 +75,6 @@ app.use(function(req, res, next) {
           result
       })
   }
-
-  
- 
   next()
 })
 
