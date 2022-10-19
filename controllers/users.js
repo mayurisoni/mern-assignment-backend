@@ -25,7 +25,12 @@ module.exports.userRegister = async (req, res, next) => {
             roleradio: req.body.roleradio,
           });
           const Createduser = await user.save();
-          successResponse(res, 201, "User Register", Createduser);
+           const NewUser={
+            name:Createduser.name,
+            email:Createduser.email,
+            roleradio:Createduser.roleradio
+           }
+          successResponse(res, 201, "User Register", NewUser);
           // res
           //   .status(201)
           //   .json({ message: "user register", Createduser: Createduser });
