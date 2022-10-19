@@ -43,7 +43,7 @@ module.exports.postTask = async (req, res, next) => {
   });
   try {
     const CreatedTask = await task.save();
-    successResponse(res, 201, "Task Registered Successfully", CreatedTask);
+    successResponse(res, 201, "Task Created Successfully", CreatedTask);
     // res
     //   .status(201)
     //   .json({

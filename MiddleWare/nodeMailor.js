@@ -27,25 +27,42 @@ const nodemailor =async (projectName,projectDescription,filename,timeline,emaill
     transporter.use('compile', hbs(handlebarOptions))
    const list= await emaillist()
     console.log(list)
+    var mailOptions = {
+                from: '<mayurisoniwork@gmail.com>', 
+                 to:list,
+                subject: 'Welcome!',
+                 template: 'email', 
+                context:{
+                    name: "mayuri", 
+                    company: 'I-pangram' ,
+                    projectName:projectName,
+                    ProjectRequiremnet:projectDescription,
+                    timeline:timeline
+                },
+                attachments: [{ filename: "pic-1.png", path: `./uploads/${filename}` }],
+               
+                //html:'<h1>hello</h1>'
+              
+            };
 
-    list.forEach(function (to, i , array) {
-        var mailOptions = {
-            from: '<mayurisoniwork@gmail.com>', 
-            subject: 'Welcome!',
-             template: 'email', 
-            context:{
-                name: "mayuri", 
-                company: 'I-pangram' ,
-                projectName:projectName,
-                ProjectRequiremnet:projectDescription,
-                timeline:timeline
-            },
-            attachments: [{ filename: "pic-1.png", path: `./uploads/${filename}` }],
+    // list.forEach(function (to, i , array) {
+    //     var mailOptions = {
+    //         from: '<mayurisoniwork@gmail.com>', 
+    //         subject: 'Welcome!',
+    //          template: 'email', 
+    //         context:{
+    //             name: "mayuri", 
+    //             company: 'I-pangram' ,
+    //             projectName:projectName,
+    //             ProjectRequiremnet:projectDescription,
+    //             timeline:timeline
+    //         },
+    //         attachments: [{ filename: "pic-1.png", path: `./uploads/${filename}` }],
            
-            //html:'<h1>hello</h1>'
+    //         //html:'<h1>hello</h1>'
           
-        };
-        mailOptions.to = to;
+    //     };
+    //     mailOptions.to = to;
     
     
   
@@ -55,6 +72,6 @@ const nodemailor =async (projectName,projectDescription,filename,timeline,emaill
         } 
         console.log('Message sent: ' + info.response);
     });
-    
-})}
+}
+// })}
 module.exports={nodemailor}

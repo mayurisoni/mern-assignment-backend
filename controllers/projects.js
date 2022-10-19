@@ -9,7 +9,7 @@ module.exports.getAllProject = async (req, res, next) => {
   try {
     const projects = await Project.find();
     if (projects.length >= 1) {
-      successResponse(res, 200, "all tasks listed successfully", projects);
+      successResponse(res, 200, "all Project listed successfully", projects);
       // res
       //   .status(200)
       //   .json({ message: "all Projects listed successfully", projects: projects });

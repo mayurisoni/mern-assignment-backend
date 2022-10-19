@@ -8,7 +8,7 @@ module.exports.user_register = async (req, res, next) => {
   try {
     const user = await User.find({ email: req.body.email });
     if (user.length >= 1) {
-      errorResponse(res, 409, "Mail exists");
+      errorResponse(res, 409, "Mail Exists");
       // return res.status(409).json({
       //   message: "Mail exists",
       // });
@@ -25,7 +25,7 @@ module.exports.user_register = async (req, res, next) => {
             roleradio: req.body.roleradio,
           });
           const Createduser = await user.save();
-          successResponse(res, 201, "user register", Createduser);
+          successResponse(res, 201, "User Register", Createduser);
           // res
           //   .status(201)
           //   .json({ message: "user register", Createduser: Createduser });
@@ -38,7 +38,7 @@ module.exports.user_register = async (req, res, next) => {
   }
 };
 
-module.exports.user_login = async (req, res, next) => {
+module.exports.userLogin = async (req, res, next) => {
   try {
     const user = await User.find({ email: req.body.email });
     if (user.length < 1) {

@@ -39,22 +39,7 @@ app.use('/projects',prjRoute);
 app.use('/task',taskRoute)
 
 
-// app.use((req,res,next)=>{
 
-//   res.successResponse=(msg,statuscode,response)=>{
-//     checking(msg,statuscode,response)
-//     // return res.status(statuscode).json({message:msg,response:response})
-//   }
-//   res.errorResponse=(msg,statuscode,response,error)=>
-// {
-//   return res.status(statuscode).json({error:error,message:msg,response:response})
-// }
-//   next()
-// })
-
-// const checking = (msg,statuscode,response)=>{
-//   return res.status(statuscode).json({message:msg,response:response})
-// }
 app.use(function(req, res, next) {
 
   
