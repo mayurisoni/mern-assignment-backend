@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { errorResponse } = require("../MiddleWare/response");
 const { successResponse } = require("../MiddleWare/successResponse");
-module.exports.user_register = async (req, res, next) => {
+module.exports.userRegister = async (req, res, next) => {
   try {
     const user = await User.find({ email: req.body.email });
     if (user.length >= 1) {

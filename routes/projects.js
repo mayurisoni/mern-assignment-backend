@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+const checkauth = require("../MiddleWare/checkauth");
 const multer = require("multer");
 const path = require("path");
 
@@ -16,17 +16,19 @@ var Storage = multer.diskStorage({
 });
 var upload = multer({ storage: Storage }).single("file");
 
-router.get("/", projectController.getAllProject);
-router.post("/",  upload, projectController.postProject);
-router.get("/:projectId", projectController.getSpecificProject);
+router.get("/", checkauth, projectController.getAllProject);
+router.post("/", checkauth, upload, projectController.postProject);
+router.get("/:projectId", checkauth, projectController.getSpecificProject);
 router.patch(
-  "/:projectId",upload,
+  "/:projectId",
+  checkauth,
+  upload,
 
- projectController.updateSpecificProject
+  projectController.updateSpecificProject
 );
 router.delete(
   "/:projectId",
-
- projectController.deleteSpecificProject
+  checkauth,
+  projectController.deleteSpecificProject
 );
 module.exports = router;

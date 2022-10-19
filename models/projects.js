@@ -9,7 +9,7 @@ const projectSchema = mongoose.Schema({
   Members: [{ type: String, required: true }],
   technology: [{ type: Object, required: true }],
   status: { type: String, required: true },
-  file: {  data: Buffer},
+  file: { data: Buffer },
 });
 
 module.exports = mongoose.model("Project", projectSchema);

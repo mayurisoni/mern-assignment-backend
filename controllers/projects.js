@@ -7,9 +7,14 @@ const Project = require("../models/projects");
 const User = require("../models/users");
 module.exports.getAllProject = async (req, res, next) => {
   try {
-    const projects = await Project.find();
-    if (projects.length >= 1) {
-      successResponse(res, 200, "all Project listed successfully", projects);
+    const projectsdata = await Project.find();
+    if (projectsdata.length >= 1) {
+      
+      //  var projects = JSON.stringify(projectsdata);
+      //  projects = projects.replace(/,/g, "")
+       
+      //  console.log(projects)
+      successResponse(res, 200, "all Project listed successfully",projectsdata);
       // res
       //   .status(200)
       //   .json({ message: "all Projects listed successfully", projects: projects });
@@ -49,7 +54,7 @@ module.exports.postProject = async (req, res, next) => {
   const emailList = async () => {
     const user = await User.find({ name: req.body.Members.split(",") });
     const list = user.map((u) => u.email);
-    console.log(JSON.stringify(list.join(",")));
+    // console.log(JSON.stringify(list.join(",")));
     return list;
     // return JSON.stringify(list.join(","))
   };
